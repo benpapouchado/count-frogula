@@ -1,5 +1,4 @@
 #!/bin/bash
-source ./export.bash
 echo "Welcome Frogula! Starting the app..."
 
 # Get local IP address
@@ -10,12 +9,12 @@ touch .env
 
 # Update API_URL if it exists, otherwise append it
 if grep -q "^API_URL=" .env; then
-  sed -i '' "s|^API_URL=.*|API_URL=http://$api_url:8080|" .env
+  sed -i '' "s|^EXPO_PUBLIC_API_URL=.*|EXPO_PUBLIC_API_URL=http://$api_url:8080|" .env
 else
-  echo "API_URL=http://$api_url:8080" >> .env
+  echo "EXPO_PUBLIC_API_URL=http://$api_url:8080" >> .env
 fi
 
-echo "Updated API_URL to http://$api_url:8080"
+echo "Updated EXPO_PUBLIC_API_URL to http://$api_url:8080"
 
 echo "Starting Expo."
-npx expo start
+npx expo start --clear
