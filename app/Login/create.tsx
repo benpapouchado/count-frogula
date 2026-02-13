@@ -74,6 +74,10 @@ export default function CreateAccountScreen() {
       const json = await response.json();
       console.log('User created:', json);
 
+      if(json.status === '200'){
+        router.push('/Home/homescreen')
+      }
+
 
     } catch (error) {
       console.error('Fetch error:', error);

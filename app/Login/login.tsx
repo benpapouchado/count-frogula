@@ -1,11 +1,45 @@
 import { router, Stack } from 'expo-router';
-import React from "react";
+import React, { useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import FormInput from '../shared';
 
 
 export default function LoginScreen() {
+    const API_URL = process.env.EXPO_PUBLIC_API_URL;
+      const [username, setUserName] = useState('');
+    
+      const [password, setPassword] = useState('password');
+
+    const login = async () => {
+    try {
+      const response = await fetch(`${API_URL}/users/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: username,
+          password: password,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const json = await response.json();
+      console.log('Successful login', json);
+
+      if(json.status === '200'){
+        router.push('/Home/homescreen')
+      }
+
+
+    } catch (error) {
+      console.error('Fetch error:', error);
+    }
+  };
 
     return (
         <>
