@@ -1,4 +1,4 @@
-import { router, Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -7,39 +7,40 @@ import FormInput from '../shared';
 
 export default function LoginScreen() {
     const API_URL = process.env.EXPO_PUBLIC_API_URL;
-      const [username, setUserName] = useState('');
-    
-      const [password, setPassword] = useState('password');
+
+    const [username, setUserName] = useState('username');
+    const [password, setPassword] = useState('password');
+    const router = useRouter();
 
     const login = async () => {
+
     try {
-      const response = await fetch(`${API_URL}/users/login`, {
+        const response = await fetch(`${API_URL}/users/login`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: username,
-          password: password,
+            username: username,
+            password: password,
         }),
-      });
+    });
 
-      if (!response.ok) {
+    if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+    }
 
-      const json = await response.json();
-      console.log('Successful login', json);
+    const json = await response.json();
+    console.log('Successful login', json);
 
-      if(json.status === '200'){
+    if(json.status === '200'){
         router.push('/Home/homescreen')
-      }
-
+    }
 
     } catch (error) {
-      console.error('Fetch error:', error);
+        console.error('Fetch error:', error);
     }
-  };
+    };
 
     return (
         <>
@@ -48,20 +49,20 @@ export default function LoginScreen() {
 
                 <Text style={styles.textHeader}>Login to your Account</Text>
 
-                <FormInput placeHolder={'Username'} onChangeText={() => { }} />
-                <FormInput placeHolder={'Password'} onChangeText={() => { }} />
+                <FormInput placeHolder={'Username'} onChangeText={setUserName} />
+                <FormInput placeHolder={'Password'} onChangeText={setPassword} />
 
-                <TouchableOpacity style={styles.createAccountButton}>
+                <TouchableOpacity style={styles.createAccountButton} onPress={login}>
                     <Text style={styles.button}>Login</Text>
                 </TouchableOpacity>
 
                 <Button title="Don't have an account yet? Create one here"
-                    onPress={() => router.navigate('/Login/create')} />
+                    onPress={() => router.push('/Login/create')} />
             </SafeAreaView>
         </>
     );
 }
-
+//curl -X POST -H "Content-Type: application/json" -d '{"username":"Penicillin", "password":"F349jgxn*448"}' http://192.168.68.103:8080/users/login
 const styles = StyleSheet.create({
     container: {
         flex: 1,
