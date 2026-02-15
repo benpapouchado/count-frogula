@@ -11,13 +11,11 @@ export default function CreateAccountScreen() {
 
 
   const [date_of_birth, setDate] = useState(new Date());
-  const [firstname, setFirstName] = useState('');
-  const [lastname, setLastName] = useState('');
-  const [username, setUserName] = useState('');
+  const [name, setName] = useState('name');
+  const [username, setUserName] = useState('username');
   const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
 
   const [password, setPassword] = useState('password');
-  const [email, setEmail] = useState('');
 
   const router = useRouter();
 
@@ -58,11 +56,9 @@ export default function CreateAccountScreen() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          firstname: firstname,
-          lastname: lastname,
+          name: name,
           username: username,
           password,
-          email,
           date_of_birth: date_of_birth.toISOString(),
         }),
       });
@@ -91,8 +87,7 @@ export default function CreateAccountScreen() {
 
         <Text style={styles.textHeader}>Create Frog Account</Text>
 
-        <FormInput onChangeText={setFirstName} placeHolder={'First Name'} />
-        <FormInput onChangeText={setLastName} placeHolder={'Last Name'} />
+        <FormInput onChangeText={setName} placeHolder={'Name'} />
 
         <View style={{ width: '100%'}}>
           <FormInput onChangeText={setUserName} placeHolder={'User Name'} />
@@ -113,7 +108,6 @@ export default function CreateAccountScreen() {
         <Button title="Check Availability" onPress={checkUsername} />
 
         <FormInput onChangeText={setPassword} placeHolder={'Password'} />
-        <FormInput onChangeText={setEmail} placeHolder={'Email'} />
 
         <CustomDatePicker date={date_of_birth.toDateString()} />
 
