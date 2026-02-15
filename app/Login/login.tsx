@@ -8,8 +8,9 @@ import FormInput from '../shared';
 export default function LoginScreen() {
     const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-    const [username, setUserName] = useState('username');
-    const [password, setPassword] = useState('password');
+    const [username, setUserName] = useState('');
+    const [password, setPassword] = useState('');
+    const [loginFailed, setLoginFailed] = useState(false);
     const router = useRouter();
 
     const login = async () => {
@@ -26,14 +27,14 @@ export default function LoginScreen() {
         }),
     });
 
-    if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+    if(response.status === 401){
+        setLoginFailed(true);
     }
 
     const json = await response.json();
     console.log('Successful login', json);
 
-    if(json.status === '200'){
+    if(response.status === 200){
         router.push('/Home/homescreen')
     }
 
@@ -56,6 +57,10 @@ export default function LoginScreen() {
                     <Text style={styles.button}>Login</Text>
                 </TouchableOpacity>
 
+                {loginFailed && (
+                    <Text style={styles.loginFailedText}>And I oop! Login failed. Please check your credentials.</Text>
+                )}
+
                 <Button title="Don't have an account yet? Create one here"
                     onPress={() => router.push('/Login/create')} />
             </SafeAreaView>
@@ -64,6 +69,11 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
+    loginFailedText: {
+        color: '#ee5252ff',
+        fontSize: 16,
+        textAlign: 'center',
+    },
     container: {
         flex: 1,
         backgroundColor: '#25292e',

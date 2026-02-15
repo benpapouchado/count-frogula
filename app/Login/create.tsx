@@ -1,21 +1,23 @@
-  import { Stack, useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomDatePicker from '../DatePicker/CustomDatePicker';
 import FormInput from '../shared';
 
+
   export default function CreateAccountScreen() {
 
     const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-
     const [date_of_birth, setDate] = useState(new Date());
-    const [name, setName] = useState('name');
-    const [username, setUserName] = useState('username');
+    const [name, setName] = useState('');
+    const [username, setUserName] = useState('');
     const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
+    const [password, setPassword] = useState('');
 
-    const [password, setPassword] = useState('password');
+    const[triggerAccountCreation, setTriggerAccountCreation] = useState(false);
+    const [accountCreationFailed, setAccountCreationFailed] = useState(false);
 
     const router = useRouter();
 
@@ -41,7 +43,12 @@ import FormInput from '../shared';
         }
 
         const json = await response.json();
-        setUsernameAvailable(!json.taken);
+
+        if(response.status === 200){
+          setUsernameAvailable(json.is_available);
+        } else {
+          setUsernameAvailable(null);
+        }
 
       } catch (error) {
         console.error('Fetch error:', error);
@@ -58,8 +65,8 @@ import FormInput from '../shared';
           body: JSON.stringify({
             name: name,
             username: username,
-            password,
-            date_of_birth: date_of_birth.toISOString().split('T')[0], // Format as YYYY-MM-DD
+            password: password,
+            date_of_birth: date_of_birth.toISOString().split('T')[0], 
           }),
         });
 
@@ -70,10 +77,13 @@ import FormInput from '../shared';
         const json = await response.json();
         console.log('User created:', json);
 
-        if(json.status === '200'){
+        if(response.status === 200){
           router.push('/Home/homescreen')
         }
 
+        if(response.status === 400 || response.status === 500){
+          setAccountCreationFailed(true);
+        }
 
       } catch (error) {
         console.error('Fetch error:', error);
@@ -111,9 +121,26 @@ import FormInput from '../shared';
 
           <CustomDatePicker date={date_of_birth} onDateChange={(d) => setDate(d)}/>
 
-          <TouchableOpacity style={styles.createAccountButton} onPress={() => addNewUser()}>
+          <TouchableOpacity style={styles.createAccountButton} 
+          onPress={() => {
+            setTriggerAccountCreation(true);
+            if(usernameAvailable === true){
+            addNewUser();
+          }}}>
             <Text style={styles.button}>Create Account</Text>
           </TouchableOpacity>
+
+          {triggerAccountCreation && username === '' && (
+            <Text style={styles.accountCreationFailedText}>Username is required</Text>
+          )}
+
+          {triggerAccountCreation && password === '' && (
+            <Text style={styles.accountCreationFailedText}>Password is required</Text>
+          )}
+
+          {accountCreationFailed && (
+            <Text style={styles.accountCreationFailedText}>Account creation failed. Please try again.</Text>
+          )}
 
           <Button title="Already have an account? Log In" onPress={() => router.push('/Login/login')} />
 
@@ -127,6 +154,12 @@ import FormInput from '../shared';
       flex: 1,
       backgroundColor: '#25292e',
       justifyContent: 'center',
+    },
+    accountCreationFailedText: {
+      color: '#ee5252ff',
+      fontSize: 16,
+      textAlign: 'center',
+      marginTop: 10,
     },
     textHeader: {
       color: '#fff',
