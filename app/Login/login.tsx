@@ -62,7 +62,7 @@ export default function LoginScreen() {
         </>
     );
 }
-//curl -X POST -H "Content-Type: application/json" -d '{"username":"Penicillin", "password":"F349jgxn*448"}' http://192.168.68.103:8080/users/login
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
