@@ -95,10 +95,10 @@ const styles = StyleSheet.create({
         paddingLeft: 30,
     },
     createAccountButton: {
-        marginTop: 30,
+        marginTop: 10,
         marginLeft: 30,
         marginRight: 30,
-        marginBottom: 20,
+        marginBottom: 15,
         padding: 20,
         borderRadius: 25,
         backgroundColor: "#0d8529c9",
