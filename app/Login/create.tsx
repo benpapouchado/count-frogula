@@ -15,8 +15,16 @@ import FormInput from '../shared';
     const [username, setUserName] = useState('');
     const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
     const [password, setPassword] = useState('');
+    const [passwordStrong, setPasswordStrong] = useState<boolean | null>(null);
 
     const[usernameCheckFailed, setUsernameCheckFailed] = useState(false);
+    const[showUsernameCheck, setShowUsernameCheck] = useState(false);
+    const[lastUsernameCheck, setLastUsernameCheck] = useState('');
+
+    const[passwordCheckFailed, setPasswordCheckFailed] = useState(false);
+    const[showPasswordCheck, setShowPasswordCheck] = useState(false);
+    const[lastPasswordCheck, setLastPasswordCheck] = useState('');
+    
     const[triggerAccountCreation, setTriggerAccountCreation] = useState(false);
     const [accountCreationFailed, setAccountCreationFailed] = useState(false);
 
@@ -48,13 +56,38 @@ import FormInput from '../shared';
         if(response.status === 200){
           setUsernameCheckFailed(false);
           setUsernameAvailable(json.is_available === "true" ? true : false);
+          setLastUsernameCheck(username);
         } 
 
       } catch (error) {
         setUsernameCheckFailed(true);
         setUsernameAvailable(null);
+        setLastUsernameCheck('');
       }
     };
+
+    const checkPasswordStrength = async () => {
+      try {
+        const response = await fetch(`${API_URL}/users/password-is-strong/${password}`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const json = await response.json();
+
+        if(response.status === 200){
+          setPasswordCheckFailed(false);
+          setPasswordStrong(json.password_is_strong === "true" ? true : false);
+          setLastPasswordCheck(password);
+        } 
+
+      } catch (error) {
+        setPasswordCheckFailed(true);
+        setPasswordStrong(null);
+        setLastPasswordCheck('');
+      }
+    }
 
     const addNewUser = async () => {
       try {
@@ -87,7 +120,7 @@ import FormInput from '../shared';
         }
 
       } catch (error) {
-        console.error('Fetch error:', error);
+        setAccountCreationFailed(true);
       }
     };
 
@@ -103,11 +136,11 @@ import FormInput from '../shared';
           <View style={{ width: '100%'}}>
             <FormInput onChangeText={setUserName} placeHolder={'User Name'} />
 
-            {usernameCheckFailed && (
+            {showUsernameCheck && usernameCheckFailed && (
               <Text style={styles.usernameNull}>Failed to check username availability</Text>
             )}
 
-            {usernameAvailable !== null && (
+            {showUsernameCheck && usernameAvailable !== null && lastUsernameCheck === username && (
               <Animated.View style={{ opacity: fadeAnim }}>
                 {usernameAvailable === true && (
                   <Text style={styles.usernameAvailableText}>🟢 Username is available</Text>
@@ -120,16 +153,42 @@ import FormInput from '../shared';
             )}
           </View>
 
-          <Button title="Check Availability" onPress={checkUsername} />
+          <Button title="Check Availability" onPress={() => {
+            checkUsername();
+            setShowUsernameCheck(!showUsernameCheck);
+          }} />
 
-          <FormInput onChangeText={setPassword} placeHolder={'Password'} />
+          <View style={{ width: '100%'}}>
+            <FormInput onChangeText={setPassword} placeHolder={'Password'} />
+
+            {showPasswordCheck && passwordCheckFailed && (
+              <Text style={styles.usernameNull}>Failed to check password strength</Text>
+            )}
+
+            {showPasswordCheck && passwordStrong !== null && lastPasswordCheck === password && (
+              <Animated.View style={{ opacity: fadeAnim }}>
+                {passwordStrong === true && (
+                  <Text style={styles.usernameAvailableText}>🟢 Password is strong</Text>
+                )}
+
+                {passwordStrong === false && (
+                  <Text style={styles.usernameTakenText}>🔴 Password is weak</Text>
+                )}
+              </Animated.View>
+            )}
+          </View>
+
+          <Button title="Check Strength" onPress={() => {
+            checkPasswordStrength();
+            setShowPasswordCheck(!showPasswordCheck);
+          }} />
 
           <CustomDatePicker date={date_of_birth} onDateChange={(d) => setDate(d)}/>
 
           <TouchableOpacity style={styles.createAccountButton} 
           onPress={() => {
             setTriggerAccountCreation(true);
-            if(usernameAvailable === true){
+            if(usernameAvailable === true && passwordStrong === true){
             addNewUser();
           }}}>
             <Text style={styles.button}>Create Account</Text>
@@ -144,7 +203,7 @@ import FormInput from '../shared';
           )}
 
           {accountCreationFailed && (
-            <Text style={styles.accountCreationFailedText}>Account creation failed. Please try again.</Text>
+            <Text style={styles.accountCreationFailedText}>Account creation failed. Perhaps username not available or password is weak. Try again!</Text>
           )}
 
           <Button title="Already have an account? Log In" onPress={() => router.push('/Login/login')} />
@@ -170,7 +229,9 @@ import FormInput from '../shared';
       color: '#ee5252ff',
       fontSize: 16,
       textAlign: 'center',
-      marginTop: 10,
+      marginLeft: 20,
+      marginRight: 20,
+      marginBottom: 20,
     },
     textHeader: {
       color: '#fff',
@@ -183,7 +244,9 @@ import FormInput from '../shared';
       color: 'white'
     },
     createAccountButton: {
-      margin: 50,
+      marginLeft: 50,
+      marginRight: 50,
+      marginBottom: 20,
       padding: 20,
       borderRadius: 25,
       backgroundColor: "#0d8529c9",
