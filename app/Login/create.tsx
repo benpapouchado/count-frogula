@@ -16,6 +16,7 @@ import FormInput from '../shared';
     const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
     const [password, setPassword] = useState('');
 
+    const[usernameCheckFailed, setUsernameCheckFailed] = useState(false);
     const[triggerAccountCreation, setTriggerAccountCreation] = useState(false);
     const [accountCreationFailed, setAccountCreationFailed] = useState(false);
 
@@ -45,13 +46,13 @@ import FormInput from '../shared';
         const json = await response.json();
 
         if(response.status === 200){
-          setUsernameAvailable(json.is_available);
-        } else {
-          setUsernameAvailable(null);
-        }
+          setUsernameCheckFailed(false);
+          setUsernameAvailable(json.is_available === "true" ? true : false);
+        } 
 
       } catch (error) {
-        console.error('Fetch error:', error);
+        setUsernameCheckFailed(true);
+        setUsernameAvailable(null);
       }
     };
 
@@ -102,6 +103,10 @@ import FormInput from '../shared';
           <View style={{ width: '100%'}}>
             <FormInput onChangeText={setUserName} placeHolder={'User Name'} />
 
+            {usernameCheckFailed && (
+              <Text style={styles.usernameNull}>Failed to check username availability</Text>
+            )}
+
             {usernameAvailable !== null && (
               <Animated.View style={{ opacity: fadeAnim }}>
                 {usernameAvailable === true && (
@@ -150,6 +155,12 @@ import FormInput from '../shared';
   }
 
   const styles = StyleSheet.create({
+    usernameNull: {
+      color: 'white',
+      marginTop: 6,
+      fontSize: 16,
+      textAlign: 'center',
+    },
     container: {
       flex: 1,
       backgroundColor: '#25292e',
