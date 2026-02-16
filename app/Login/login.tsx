@@ -53,6 +53,9 @@ export default function LoginScreen() {
                 <FormInput placeHolder={'Username'} onChangeText={setUserName} />
                 <FormInput placeHolder={'Password'} onChangeText={setPassword} />
 
+                <Button title="Forgot Password? Reset it here"
+                    onPress={() => router.push('/Login/forgot_password')} />
+
                 <TouchableOpacity style={styles.createAccountButton} onPress={login}>
                     <Text style={styles.button}>Login</Text>
                 </TouchableOpacity>
