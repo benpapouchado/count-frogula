@@ -188,6 +188,15 @@ import FormInput from '../shared';
           <TouchableOpacity style={styles.createAccountButton} 
           onPress={() => {
             setTriggerAccountCreation(true);
+
+            if(usernameAvailable === null){
+              checkUsername();
+            }
+
+            if(passwordStrong === null){
+              checkPasswordStrength();
+            }
+
             if(usernameAvailable === true && passwordStrong === true){
             addNewUser();
           }}}>
