@@ -232,7 +232,7 @@ export default function ForgotPasswordScreen() {
                     <Text style={styles.text}>Enter the code to confirm password reset</Text>
                 )}
 
-                {OTPcode.join('') !== code && (
+                {OTPcode.join('') !== code && OTPcode.join('').length === 4 && (
                     console.log('Incorrect code'),
                     <Text style={styles.errorText}>Incorrect code. Please try again.</Text>
                 )}
