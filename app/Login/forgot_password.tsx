@@ -106,7 +106,7 @@ export default function ForgotPasswordScreen() {
                 body: JSON.stringify({
                     id: id,
                     username: username,
-                    code: code,
+                    code: OTPcode.join(''),
                     password: password,
                     confirmPassword: confirmPassword,
                 }),
@@ -222,9 +222,24 @@ export default function ForgotPasswordScreen() {
                     console.log('Passwords do not match'),
                     <Text style={styles.errorText}>Passwords do not match</Text>
                 )}
+
+                {passwordStrong === false && (
+                    console.log('Password is weak'),
+                    <Text style={styles.errorText}>Password is weak. Must be at least 8 characters, contain an uppercase letter, a lowercase letter, a number, and a special character.</Text>
+                )}
                 
-                {userExists === true && password === confirmPassword && (
-                    <Text style={styles.text}>Password reset successful! Please login with your new password.</Text>
+                {userExists === true && password === confirmPassword && enterCode === true && (
+                    <Text style={styles.text}>Enter the code to confirm password reset</Text>
+                )}
+
+                {OTPcode.join('') !== code && (
+                    console.log('Incorrect code'),
+                    <Text style={styles.errorText}>Incorrect code. Please try again.</Text>
+                )}
+
+                {OTPcode.join('') === code && code !== '' && (
+                    console.log('Code correct'),
+                    <Text style={styles.text}>Code correct! Your password has been reset.</Text>
                 )}
                 
                 <Button title="Back to Login"
