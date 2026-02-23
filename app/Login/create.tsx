@@ -12,20 +12,21 @@ import FormInput from '../shared';
 
     const [date_of_birth, setDate] = useState(new Date());
     const [name, setName] = useState('');
+
     const [username, setUserName] = useState('');
     const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
+
+    const [usernameCheckFailed, setUsernameCheckFailed] = useState(false);
+    const [showUsernameCheck, setShowUsernameCheck] = useState(false);
+    const [lastUsernameCheck, setLastUsernameCheck] = useState('');
+
+    const [passwordCheckFailed, setPasswordCheckFailed] = useState(false);
+    const [showPasswordCheck, setShowPasswordCheck] = useState(false);
+    const [lastPasswordCheck, setLastPasswordCheck] = useState('');
     const [password, setPassword] = useState('');
     const [passwordStrong, setPasswordStrong] = useState<boolean | null>(null);
-
-    const[usernameCheckFailed, setUsernameCheckFailed] = useState(false);
-    const[showUsernameCheck, setShowUsernameCheck] = useState(false);
-    const[lastUsernameCheck, setLastUsernameCheck] = useState('');
-
-    const[passwordCheckFailed, setPasswordCheckFailed] = useState(false);
-    const[showPasswordCheck, setShowPasswordCheck] = useState(false);
-    const[lastPasswordCheck, setLastPasswordCheck] = useState('');
     
-    const[triggerAccountCreation, setTriggerAccountCreation] = useState(false);
+    const [triggerAccountCreation, setTriggerAccountCreation] = useState(false);
     const [accountCreationFailed, setAccountCreationFailed] = useState(false);
 
     const router = useRouter();
@@ -33,7 +34,7 @@ import FormInput from '../shared';
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-      if (usernameAvailable !== null) {
+      if (usernameAvailable !== null || passwordStrong !== null) {
         fadeAnim.setValue(0);
         Animated.timing(fadeAnim, {
           toValue: 1,
@@ -41,7 +42,7 @@ import FormInput from '../shared';
           useNativeDriver: true,
         }).start();
       }
-    }, [usernameAvailable]);
+    }, [usernameAvailable, passwordStrong]);
 
     const checkUsername = async () => {
       try {
@@ -58,6 +59,12 @@ import FormInput from '../shared';
           setUsernameAvailable(json.is_available === "true" ? true : false);
           setLastUsernameCheck(username);
         } 
+
+        if(response.status === 400){
+          setUsernameCheckFailed(true);
+          setUsernameAvailable(null);
+          setLastUsernameCheck(username);
+        }
 
       } catch (error) {
         setUsernameCheckFailed(true);
@@ -81,6 +88,12 @@ import FormInput from '../shared';
           setPasswordStrong(json.password_is_strong === "true" ? true : false);
           setLastPasswordCheck(password);
         } 
+
+        if(response.status === 400){
+          setPasswordCheckFailed(false);
+          setPasswordStrong(false);
+          setLastPasswordCheck(password);
+        }
 
       } catch (error) {
         setPasswordCheckFailed(true);
