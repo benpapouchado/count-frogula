@@ -60,12 +60,8 @@ export default function ForgotPasswordScreen() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': 'Basic ' + btoa(btoa(username) + ':' + btoa(password) + ':' + btoa(confirmPassword)),
                 },
-                body: JSON.stringify({
-                    username: username,
-                    password: password,
-                    confirmPassword: confirmPassword,
-                }),
             });
 
             const json = await response.json();
@@ -102,13 +98,11 @@ export default function ForgotPasswordScreen() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': 'Basic ' + btoa(btoa(username) + ':' + btoa(password)), 
                 },
                 body: JSON.stringify({
                     id: id,
-                    username: username,
                     code: OTPcode.join(''),
-                    password: password,
-                    confirmPassword: confirmPassword,
                 }),
             });
 

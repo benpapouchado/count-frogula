@@ -20,11 +20,8 @@ export default function LoginScreen() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Basic ' + btoa(btoa(username) + ':' + btoa(password)),
         },
-        body: JSON.stringify({
-            username: username,
-            password: password,
-        }),
     });
 
     if(response.status === 401){

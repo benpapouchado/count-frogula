@@ -46,7 +46,13 @@ import FormInput from '../shared';
 
     const checkUsername = async () => {
       try {
-        const response = await fetch(`${API_URL}/users/username-exists/${username}`);
+        const response = await fetch(`${API_URL}/users/username-exists`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic ' + btoa(username), 
+          }}
+        );
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -75,7 +81,13 @@ import FormInput from '../shared';
 
     const checkPasswordStrength = async () => {
       try {
-        const response = await fetch(`${API_URL}/users/password-is-strong/${password}`);
+        const response = await fetch(`${API_URL}/users/password-is-strong`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic ' + btoa(password),
+          },
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -108,11 +120,10 @@ import FormInput from '../shared';
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Basic ' + btoa(btoa(username) + ':' + btoa(password)), 
           },
           body: JSON.stringify({
             name: name,
-            username: username,
-            password: password,
             date_of_birth: date_of_birth.toISOString().split('T')[0], 
           }),
         });
