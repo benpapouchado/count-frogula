@@ -94,15 +94,15 @@ export default function ForgotPasswordScreen() {
 
     const checkCode = async () => {
         try {
-            const response = await fetch(`${API_URL}/users/update-password/${id}/${code}`, {
+            const response = await fetch(`${API_URL}/users/update-password`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Basic ' + btoa(btoa(username) + ':' + btoa(password)), 
+                    'Authorization': 'Basic ' + btoa(btoa(username) + ':' + btoa(password) + ':' + btoa(OTPcode.join(''))), 
                 },
                 body: JSON.stringify({
-                    id: id,
-                    code: OTPcode.join(''),
+                    id: id,               
+                    code: code,
                 }),
             });
 
