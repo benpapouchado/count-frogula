@@ -50,7 +50,7 @@ import FormInput from '../shared';
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Basic ' + btoa(username), 
+            'Authorization': 'Basic ' + btoa(btoa(username)), 
           }}
         );
 
@@ -85,7 +85,7 @@ import FormInput from '../shared';
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Basic ' + btoa(password),
+            'Authorization': 'Basic ' + btoa(btoa(password)),
           },
         });
 
